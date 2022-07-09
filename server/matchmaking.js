@@ -2,7 +2,7 @@
 *  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
 *  See LICENSE in the source repository root for complete license information.
 */
-var tools = require('./launchchrome');
+
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
@@ -19,64 +19,86 @@ var credentials = {key: privateKey, cert: certificate};
 const app = express();
 
 // Initialize variables.
-const port = 80; // process.env.PORT || 3000;
+const port = 8888; // process.env.PORT || 3000;
 
 // Configure morgan module to log all requests.
+let allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', "*");
+    res.header('Access-Control-Allow-Headers', "*");
+    next();
+  }
+  app.use(allowCrossDomain);
 app.use(morgan('dev'));
 
 // Set the front-end folder to serve public assets.
-app.use(express.static('jsa'))
+//app.use(express.static('jsa'))
 
 // Set up a route for index.html.
+let list_port=[11111,11112,11113]
+let list_portcopy=[11121,11122,11123]
+//now a map of port/portcopy and id
+let mapid=new Map()
+let mapport=new Map()
+setInterval(function () {
+    console.log(mapport);
+  }, 3000);
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/jsa/index.html'));
 });
 
 
-app.get('/launch', (req, res) => {
+app.get('/getavailableport', (req, res) => {
     
     console.log(req.params);
     console.log(req.query);
     // id = uuidv4();
-    id=req.query.id;
-    let p1=req.query.port1,p2=req.query.port2
-    tools.launch(req.query.skuId,id,p1,p2)
-    result = {"id":id,"status":"success"}
+    let id=req.query.id;
+    //have to get available ports at this id
+    let p1,p2;
+    for (index = 0; index < list_port.length; index++) {
+        if(mapport.get(list_port[index])==undefined)
+        {
+            p1=list_port[index];
+            break;
+        }
+    } 
+    for (index = 0; index < list_portcopy.length; index++) {
+        if(mapport.get(list_portcopy[index])==undefined)
+        {
+            p2=list_portcopy[index];
+            break;
+        }
+    } 
+   
+    if(p1==undefined || p2==undefined)
+    {
+        result = {"status":"failure"}
+        res.json(result)
+    }
+
+    mapid.set(id,[p1,p2]);
+    mapport.set(p1,id);
+    mapport.set(p2,id);
+
+    result = {"port1":p1,"port2":p2,"status":"success"}
     res.json(result)
     // res.sendFile(path.join(__dirname + '/jsa/index.html'));
     // res.send(req.params)
   });
 
-app.get('/close', (req, res) => {
+  app.get('/closeport', (req, res) => {
     
     console.log(req.params);
     console.log(req.query);
-//fetch to matchmaker
-    let id=req.query.id
-    tools.closebrowser(id)
-    
-    https.get('https://amanraj.bond:8888/closeport?id='+id, (resp) => {
-        let data = '';
-      
-        // A chunk of data has been received.
-        resp.on('data', (chunk) => {
-          data += chunk;
-        });
-      
-        // The whole response has been received. Print out the result.
-        resp.on('end', () => {
-          //console.log(JSON.parse(data).explanation);
-        });
-      
-      }).on("error", (err) => {
-        console.log("Error: " + err.message);
-      });
-
-
-
-
+    // id = uuidv4();
+    id=req.query.id;
+    //have to close port at this id
+    let p=mapid.get(id);
+    mapport.delete(p[0]);
+    mapport.delete(p[1]);
+    mapid.delete(id);
     result = {"status":"success"}
-    res.json(result);
+    res.json(result)
     // res.sendFile(path.join(__dirname + '/jsa/index.html'));
     // res.send(req.params)
   });

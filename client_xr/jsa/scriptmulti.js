@@ -29,7 +29,7 @@ let index = 128;
 
 const img_plane = new Image();
 img_plane.crossOrigin = "";   // ask for CORS permission
-img_plane.src =  '';  
+img_plane.src =  './cat.jpg';  
 
 const texture_plane = new THREE.Texture(img_plane);
 img_plane.onload = () => { texture_plane.needsUpdate = true };
@@ -44,7 +44,7 @@ const mesh_plane = new THREE.Mesh(geometry_plane,material);
    // mesh_plane.material.color.setHex(0xff9a00);
 scene.add(mesh_plane);
 
-// scene.background = new THREE.Color(1,0,0);
+ //scene.background = new THREE.Color(1,0,0);
 //scene.background=null;
       const aspect = window.innerWidth / window.innerHeight;
     let  camera = new THREE.PerspectiveCamera(45, aspect, 0.01, 1000);
@@ -70,26 +70,88 @@ render() ;
 //const myInterval = setInterval(render, 200);
 
 
-const WS_URL = 'ws://3.111.63.238:11111';
-const ws = new WebSocket(WS_URL,'echo-protocol');
+const WS_URL1 = 'ws://3.111.63.238:11111';
+const WS_URL2 = 'ws://3.111.63.238:11112';
+const WS_URL3 = 'ws://3.111.63.238:11113';
+const WS_URL4 = 'ws://3.111.63.238:11114';
+const WS_URL5 = 'ws://3.111.63.238:11115';
+const WS_URL6 = 'ws://3.111.63.238:11116';
+const WS_URL7 = 'ws://3.111.63.238:11117';
+const WS_URL8 = 'ws://3.111.63.238:11118';
+const WS_URL9 = 'ws://3.111.63.238:11119';
+const WS_URL10 = 'ws://3.111.63.238:11120';
+const ws1 = new WebSocket(WS_URL1,'echo-protocol');
+const ws2 = new WebSocket(WS_URL2,'echo-protocol');
+const ws3 = new WebSocket(WS_URL3,'echo-protocol');
+const ws4 = new WebSocket(WS_URL4,'echo-protocol');
+const ws5 = new WebSocket(WS_URL5,'echo-protocol');
+const ws6 = new WebSocket(WS_URL6,'echo-protocol');
+const ws7 = new WebSocket(WS_URL7,'echo-protocol');
+const ws8 = new WebSocket(WS_URL8,'echo-protocol');
+const ws9 = new WebSocket(WS_URL9,'echo-protocol');
+const ws10 = new WebSocket(WS_URL10,'echo-protocol');
+
 // var W3CWebSocket = require('websocket').w3cwebsocket;
 
 // var ws = new W3CWebSocket('ws://192.168.1.2:8082/', 'echo-protocol');
-ws.onopen = () => console.log(`Connected to ${WS_URL}`);
+let data=Array(24).fill(0);
+ws1.onopen = () => console.log(`Connected to ${WS_URL1}`);
 let blobArray=[]
 //let ct=0
-ws.onmessage = message => {
-  //scene.add(cubeMesh)
-    //    ct++;
-     // console.info(typeof(message.data));
-      img_plane.src = message.data;
-    //  console.log(message);
-      //render();
-     // ws.send(JSON.stringify(controls.object.position));
-     // console.log(controls.object);
-
+let received=9;
+function aman()
+{
+  let toreceive=(received+1)%10;
+  if(data[toreceive]!=0)
+  {
+    img_plane.src = data[toreceive];
+    data[toreceive]=0;
+    received=toreceive;
+    console.log(received);
+  }
 
 }
+ws1.onmessage = message => {
+     data[0]=message.data;
+     aman();
+  }
+  ws2.onmessage = message => {
+    data[1]=message.data;
+    aman();
+     }
+     ws3.onmessage = message => {
+      data[2]=message.data;
+      aman();
+       }
+       ws4.onmessage = message => {
+        data[3]=message.data;
+        aman();
+         }
+         ws5.onmessage = message => {
+          data[4]=message.data;
+          aman();
+
+           }
+           ws6.onmessage = message => {
+            data[5]=message.data;
+            aman();
+             }
+             ws7.onmessage = message => {
+              data[6]=message.data;
+              aman();
+               }
+               ws8.onmessage = message => {
+                data[7]=message.data;
+                aman();
+                 }
+                 ws9.onmessage = message => {
+                  data[8]=message.data;
+                  aman();
+                   }
+                   ws10.onmessage = message => {
+                    data[9]=message.data;
+                    aman();
+                     }
 
 
 // function onKeyDown(e) {
@@ -112,42 +174,42 @@ ws.onmessage = message => {
 //             break;
 //     }
 // }
-const WS_URL2 = 'ws://3.111.63.238:11112';
-const ws2 = new WebSocket(WS_URL2,'echo-protocol');
+const WS_URL = 'ws://3.111.63.238:11121';
+const ws = new WebSocket(WS_URL,'echo-protocol');
 // var W3CWebSocket = require('websocket').w3cwebsocket;
 
 // var ws = new W3CWebSocket('ws://192.168.1.2:8082/', 'echo-protocol');
-ws2.onopen = () => console.log(`Connected to ${WS_URL2}`);
+ws.onopen = () => console.log(`Connected to ${WS_URL}`);
 
 //let ct=0
-ws2.onmessage = message => {
+ws.onmessage = message => {
   
 }
 function sendorbitcontrol()
 {
-  ws2.send(JSON.stringify(controls.object.position));
+  ws.send(JSON.stringify(controls.object.position));
 }
 setInterval(sendorbitcontrol, 100);
 
 var element1 = document.getElementById("elem_Don");
 element1.onclick = function() {
  // console.log("button clicked");
-  ws2.send(JSON.stringify({"type":"button","val":"Dimension_on"}))
+  ws.send(JSON.stringify({"type":"button","val":"Dimension_on"}))
 }
 var element2 = document.getElementById("elem_Doff");
 element2.onclick = function() {
  // console.log("button clicked");
-  ws2.send(JSON.stringify({"type":"button","val":"Dimension_off"}))
+  ws.send(JSON.stringify({"type":"button","val":"Dimension_off"}))
 }
 var element3 = document.getElementById("elem_Brown");
 element3.onclick = function() {
  // console.log("button clicked");
-  ws2.send(JSON.stringify({"type":"button","val":"Brown"}))
+  ws.send(JSON.stringify({"type":"button","val":"Brown"}))
 }
 var element4 = document.getElementById("elem_Blue");
 element4.onclick = function() {
  // console.log("button clicked");
-  ws2.send(JSON.stringify({"type":"button","val":"Blue"}))
+  ws.send(JSON.stringify({"type":"button","val":"Blue"}))
 }
 
 
